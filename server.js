@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import figlet from 'figlet';
 import readlineSync from 'readline-sync';
 import { startGame } from './game.js';
-import { saveData, loadData, loadFiles } from './util.js';
+import {waitSeconds, saveData, loadData, loadFiles } from './util.js';
 
 // 로비 화면을 출력하는 함수
 function displayLobby() {
@@ -81,12 +81,7 @@ async function displayReplay() {
   await Replay(choicedReplay);
 }
 
-const waitSeconds = (second) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, second * 1000);
-  });
-};
-async function playStage(stage, player, monster, logs, win) {
+async function replayStage(stage, player, monster, logs, win) {
   const displayStatus = () => {
     console.clear();
     console.log(chalk.magentaBright(`\n=== Current Status ===`));
@@ -127,16 +122,18 @@ async function playStage(stage, player, monster, logs, win) {
         console.log(chalk.red(e.msg));
       }
     });
-    await waitSeconds(1.5);
+    await waitSeconds(1);
   }
 
   if (win) {
     console.log(chalk.green('승리하였습니다!'));
+    console.log(chalk.greenBright(`플레이어의 체력이 ${stage * 10} 회복되었습니다!`));
+    console.log(chalk.greenBright('플레이어의 능력치가 올랐습니다!'));
   } else {
-    console.log(chalk.red('패배하였습니다!'));
+    console.log(chalk.red('패배하였습니다.'));
   }
 
-  await waitSeconds(2);
+  await waitSeconds(1.5);
 }
 
 async function Replay(choicedReplay) {
@@ -144,7 +141,7 @@ async function Replay(choicedReplay) {
   // i가 stage
   let len = choicedReplay.length;
   for (let i = 0; i < len; i++) {
-    await playStage(
+    await replayStage(
       i + 1,
       choicedReplay[i].player,
       choicedReplay[i].monster,
@@ -156,7 +153,7 @@ async function Replay(choicedReplay) {
   if (len < 10) {
     console.log(chalk.red(`최종 기록: stage ${len}`));
   } else {
-    console.log(chalk.green('최종 승리!'));
+    console.log(chalk.green('모든 스테이지를 클리어 했습니다!'));
   }
 
   await waitSeconds(2);

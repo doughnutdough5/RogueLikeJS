@@ -2,6 +2,12 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
+export const waitSeconds = (second) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, second * 1000);
+  });
+};
+
 export function saveData(turnLogs) {
   const now = new Date();
   const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 15);

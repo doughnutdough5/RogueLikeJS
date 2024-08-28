@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import readlineSync from 'readline-sync';
+import { waitSeconds } from './util.js';
 
 const rand = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
@@ -106,7 +107,7 @@ class Player extends Entity {
   }
 
   increaseStatus() {
-    this.hp += rand(20, 50);
+    // this.hp += rand(20, 50); // FIX: heal 메서드 사용
     this.atk += rand(5, 20);
     this.maxAtkRate += Math.floor(Math.random() * 100) / 100;
     this.runAwayRate += rand(1, 3);
@@ -295,8 +296,11 @@ export async function startGame() {
 
     // 죽음
     if (!result.result) {
-      log(chalk.red(`패배했습니다. 최종기록: ${stage}`));
+      log(chalk.red('패배하였습니다.'));
+      log(chalk.red(`최종기록: stage ${stage}`));
       break;
+    } else {
+      log(chalk.green('승리하였습니다!'));
     }
 
     // 승리
@@ -306,7 +310,10 @@ export async function startGame() {
     }
 
     player.heal(stage * 10);
+    log(chalk.greenBright(`플레이어의 체력이 ${stage * 10} 회복되었습니다!`));
     player.increaseStatus();
+    log(chalk.greenBright('플레이어의 능력치가 올랐습니다!'));
+    await waitSeconds(2);
   }
 
   return roundLogs;
