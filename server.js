@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import figlet from 'figlet';
 import readlineSync from 'readline-sync';
 import { startGame } from './game.js';
-import {waitSeconds, saveData, loadData, loadFiles } from './util.js';
+import { waitSeconds, saveData, loadData, loadFiles } from './util.js';
 
 // 로비 화면을 출력하는 함수
 function displayLobby() {

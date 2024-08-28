@@ -17,7 +17,6 @@ export function saveData(turnLogs) {
   const __dirname = dirname(__filename);
 
   const saveDirectory = join(__dirname, 'saves');
-
   if (!existsSync(saveDirectory)) {
     mkdirSync(saveDirectory, { recursive: true });
   }
