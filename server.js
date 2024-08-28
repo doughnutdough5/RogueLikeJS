@@ -24,8 +24,8 @@ function displayLobby() {
 
   // 옵션들
   console.log(chalk.blue('1.') + chalk.white(' 새로운 게임 시작'));
-  console.log(chalk.blue('2.') + chalk.white(' 업적 확인하기'));
-  console.log(chalk.blue('3.') + chalk.white(' 리플레이'));
+  console.log(chalk.blue('2.') + chalk.white(' 리플레이'));
+  console.log(chalk.blue('3.') + chalk.white(' 업적 확인하기'));
   console.log(chalk.blue('4.') + chalk.white(' 종료'));
 
   // 하단 경계선
@@ -52,15 +52,31 @@ async function displayReplay() {
   displayTitle();
   const line = chalk.magentaBright('='.repeat(50));
   console.log(line);
+  console.log(chalk.green('리플레이 리스트\n'));
 
   const fileList = loadFiles();
-  for (let i = 0; i < fileList.length; i++) {
-    console.log(`[${i}]: ${fileList[i]}`);
+  if (fileList.length === 0) {
+    console.log(chalk.redBright('리플레이가 없습니다. 메인메뉴로 돌아갑니다.'));
+    await waitSeconds(1);
+    main();
+    return;
   }
+  for (let i = 0; i < fileList.length; i++) {
+    console.log(`${chalk.blue(`[${i}]`)}: ${fileList[i]}`);
+  }
+
+  console.log(line);
   console.log();
   console.log(chalk.gray('보고 싶은 리플레이의 번호를 입력하세요.'));
-  // TODO: 유효하지 않은 입력 처리, 리플 수 넘는 숫자도 체크
-  const choice = readlineSync.question('입력: ');
+  let choice;
+  while (true) {
+    choice = readlineSync.question('입력: ');
+    if (parseInt(choice) >= fileList.length || isNaN(parseInt(choice))) {
+      continue;
+    } else {
+      break;
+    }
+  }
   const choicedReplay = loadData(fileList[parseInt(choice)]);
   await Replay(choicedReplay);
 }
@@ -77,9 +93,11 @@ async function playStage(stage, player, monster, logs, win) {
     console.log(
       chalk.cyanBright(`| Stage: ${stage} `) +
         chalk.blueBright(
-          `| 플레이어 정보 HP: ${player.hp}, Attack: ${player.atk} ~ ${player.atk + Math.floor(player.atk * player.maxAtkRate)} Armor: ${player.armor} `,
+          `| 플레이어 정보 HP: ${player.hp > 0 ? player.hp : 0}, Attack: ${player.atk} ~ ${player.atk + Math.floor(player.atk * player.maxAtkRate)} Armor: ${player.armor} `,
         ) +
-        chalk.redBright(`| 몬스터 정보 HP: ${monster.hp}, Attack: ${monster.atk} |`),
+        chalk.redBright(
+          `| 몬스터 정보 HP: ${monster.hp > 0 ? monster.hp : 0}, Attack: ${monster.atk} |`,
+        ),
     );
     console.log(chalk.magentaBright(`=====================\n`));
   };
@@ -109,7 +127,7 @@ async function playStage(stage, player, monster, logs, win) {
         console.log(chalk.red(e.msg));
       }
     });
-    await waitSeconds(2);
+    await waitSeconds(1.5);
   }
 
   if (win) {
@@ -156,12 +174,12 @@ async function handleUserInput() {
       const logs = await startGame();
       return logs;
     case '2':
+      displayReplay();
+      break;
+    case '3':
       console.log(chalk.yellow('구현 준비중입니다.. 게임을 시작하세요'));
       // 업적 확인하기 로직을 구현
       handleUserInput();
-      break;
-    case '3':
-      displayReplay();
       break;
     case '4':
       console.log(chalk.red('게임을 종료합니다.'));

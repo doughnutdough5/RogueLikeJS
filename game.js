@@ -137,7 +137,6 @@ class TurnLog {
   constructor(player, monster) {
     this.player = player;
     this.monster = monster;
-    // player turn 0, monster turn 1
     this.logs = [];
     this.win = null;
   }
@@ -149,9 +148,11 @@ function displayStatus(stage, player, monster) {
   log(
     chalk.cyanBright(`| Stage: ${stage} `) +
       chalk.blueBright(
-        `| 플레이어 정보 HP: ${player.hp}, Attack: ${player.printAtk()} Armor: ${player.armor} `,
+        `| 플레이어 정보 HP: ${player.hp > 0 ? player.hp : 0}, Attack: ${player.printAtk()} Armor: ${player.armor} `,
       ) +
-      chalk.redBright(`| 몬스터 정보 HP: ${monster.hp}, Attack: ${monster.atk} |`),
+      chalk.redBright(
+        `| 몬스터 정보 HP: ${monster.hp > 0 ? monster.hp : 0}, Attack: ${monster.atk} |`,
+      ),
   );
   log(chalk.magentaBright(`=====================\n`));
 }
@@ -183,9 +184,9 @@ const battle = async (stage, player, monster) => {
       ),
     );
     const choice = readlineSync.question('당신의 선택은? ');
+
     let defendSucceed = null;
     let escapeSucceed = null;
-
     // 플레이어 턴 처리
     switch (choice) {
       case '1': // 공격
@@ -228,7 +229,7 @@ const battle = async (stage, player, monster) => {
           succeed: escape.result,
         };
         break;
-      case '4': // 스킬?
+      case '4': // 스킬
         const powerAttack = player.powerAttack(monster);
         if (powerAttack.result) {
           logs.push(chalk.green(powerAttack.msg));
@@ -298,9 +299,9 @@ export async function startGame() {
       break;
     }
 
+    // 승리
     if (stage === 10 && result.result) {
       log(chalk.green('모든 스테이지를 클리어 했습니다!'));
-      // 승리
       break;
     }
 
