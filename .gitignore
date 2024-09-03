@@ -1,5 +1,4 @@
 node_modules/
 saves/
-package-lock.json
 .eslintrc.json
 .prettierrc
